@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url   = env("DATABASE_URL")
+}
+enum UserRoles {
+  User
+  ADMIN
+  EDITOR
+
+}
+model users{
+  id Int @id@default(autoincrement())
+  username String 
+  lastname String
+  email String
+  password String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
+  role UserRoles
+
+Posts Posts[]
+comments comments[]
+Likes Likes[]
+commentlikes commentlikes[]
+replaycomments replaycomments[]
+}
+
+
+model Posts{
+  id Int @id@default(autoincrement())
+  title String
+  content String
+  usersId Int
+  is_published Boolean @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  user users @relation(fields: [usersId], references: [id])
+  comments comments[]
+  Likes Likes[]
+
+
+}
+
+model comments{
+  id Int @id@default(autoincrement())
+  content String
+  usersId Int
+  PostId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime@updatedAt
+
+commentlikes commentlikes[]
+replaycomments replaycomments[]
+  User users @relation(fields: [usersId], references: [id])
+  Posts  Posts @relation(fields: [PostId],references: [id])
+
+  
+}
+model Likes{
+  id Int @id@default(autoincrement()) 
+  usersId Int
+  postId Int
+  commentsId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime@updatedAt
+
+
+  User users @relation(fields: [usersId], references: [id])
+  Posts  Posts @relation(fields: [postId],references: [id])
+  // comments comments @relation(fields: [commentsId],references: [id])
+}
+model commentlikes{
+  id Int @id@default(autoincrement())
+  usersId Int
+  commentsId Int
+  // PostsId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime@updatedAt
+
+  User users @relation(fields: [usersId], references: [id])
+  comments comments @relation(fields: [commentsId], references: [id])
+  // posts Posts @relation(fields: [PostsId], references: [id])
+
+}
+model replaycomments{
+  id Int @id@default(autoincrement())
+  content String
+  usersId Int
+  // PostsId Int
+  commentsId Int
+   createdAt DateTime @default(now())
+  updatedAt DateTime@updatedAt
+
+    User users @relation(fields: [usersId], references: [id])
+  comments comments @relation(fields: [commentsId], references: [id])
+  // posts Posts @relation(fields: [PostsId], references: [id])
+    
+}
